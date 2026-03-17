@@ -287,6 +287,79 @@
             75% { transform: translateX(10px); }
         }
 
+        /* 连对奖励动画 */
+        .streak-bonus {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 72px;
+            font-weight: bold;
+            color: #f39c12;
+            text-shadow: 0 0 20px rgba(243, 156, 18, 0.8);
+            z-index: 1000;
+            animation: streakPop 1s ease forwards;
+            pointer-events: none;
+        }
+
+        @keyframes streakPop {
+            0% {
+                transform: translate(-50%, -50%) scale(0.5);
+                opacity: 0;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.3);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* 粒子效果 */
+        .particle {
+            position: fixed;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 999;
+            animation: particleExplode 0.8s ease forwards;
+        }
+
+        @keyframes particleExplode {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(0);
+                opacity: 0;
+            }
+        }
+
+        /* 分数增加动画 */
+        .score-popup {
+            position: absolute;
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--secondary);
+            animation: scoreFloat 1s ease forwards;
+            pointer-events: none;
+        }
+
+        @keyframes scoreFloat {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-50px) scale(1.5);
+                opacity: 0;
+            }
+        }
+
         /* 进度条 */
         .progress-container {
             background: var(--light);
@@ -468,6 +541,11 @@
 
                 <h3 style="margin: 20px 0; color: var(--primary);">选择游戏模式</h3>
                 <div class="mode-select">
+                    <div class="mode-card" data-mode="association">
+                        <div class="mode-icon">💡</div>
+                        <div class="mode-title">数字联想</div>
+                        <div class="mode-desc">快速想到相关数字</div>
+                    </div>
                     <div class="mode-card" data-mode="estimate">
                         <div class="mode-icon">👁️</div>
                         <div class="mode-title">快速估计</div>
@@ -487,11 +565,6 @@
                         <div class="mode-icon">🔢</div>
                         <div class="mode-title">数字规律</div>
                         <div class="mode-desc">找出下一个数字</div>
-                    </div>
-                    <div class="mode-card" data-mode="association">
-                        <div class="mode-icon">💡</div>
-                        <div class="mode-title">数字联想</div>
-                        <div class="mode-desc">快速想到相关数字</div>
                     </div>
                 </div>
 
@@ -857,8 +930,18 @@
                 btn.classList.add('correct');
                 gameState.correctAnswers++;
                 gameState.streak++;
-                gameState.score += 10 * gameState.streak;
+                const points = 10 * gameState.streak;
+                gameState.score += points;
+                
+                // 即时奖励反馈
                 showReward('⭐');
+                createParticles(btn);
+                showScorePopup(points);
+                
+                // 连对奖励
+                if (gameState.streak >= 3) {
+                    showStreakBonus(gameState.streak);
+                }
             } else {
                 btn.classList.add('wrong');
                 gameState.streak = 0;
@@ -881,6 +964,60 @@
             anim.style.display = 'block';
             setTimeout(() => {
                 anim.style.display = 'none';
+            }, 1000);
+        }
+
+        // 创建粒子爆炸效果
+        function createParticles(element) {
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const colors = ['#f39c12', '#e74c3c', '#3498db', '#2ecc71', '#9b59b6'];
+
+            for (let i = 0; i < 12; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = centerX + 'px';
+                particle.style.top = centerY + 'px';
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                // 随机方向
+                const angle = (i / 12) * Math.PI * 2;
+                const distance = 100 + Math.random() * 100;
+                particle.style.setProperty('--tx', Math.cos(angle) * distance + 'px');
+                particle.style.setProperty('--ty', Math.sin(angle) * distance + 'px');
+                
+                document.body.appendChild(particle);
+                
+                setTimeout(() => {
+                    particle.remove();
+                }, 800);
+            }
+        }
+
+        // 显示分数增加弹窗
+        function showScorePopup(points) {
+            const popup = document.createElement('div');
+            popup.className = 'score-popup';
+            popup.textContent = '+' + points;
+            popup.style.left = '50%';
+            popup.style.top = '40%';
+            document.body.appendChild(popup);
+            
+            setTimeout(() => {
+                popup.remove();
+            }, 1000);
+        }
+
+        // 显示连对奖励
+        function showStreakBonus(streak) {
+            const bonus = document.createElement('div');
+            bonus.className = 'streak-bonus';
+            bonus.textContent = streak + '连对!🔥';
+            document.body.appendChild(bonus);
+            
+            setTimeout(() => {
+                bonus.remove();
             }, 1000);
         }
 
