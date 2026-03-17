@@ -484,9 +484,14 @@
                         <div class="mode-desc">心算小能手</div>
                     </div>
                     <div class="mode-card" data-mode="sequence">
-                        <div class="mode-icon"></div>
+                        <div class="mode-icon">🔢</div>
                         <div class="mode-title">数字规律</div>
                         <div class="mode-desc">找出下一个数字</div>
+                    </div>
+                    <div class="mode-card" data-mode="association">
+                        <div class="mode-icon">💡</div>
+                        <div class="mode-title">数字联想</div>
+                        <div class="mode-desc">快速想到相关数字</div>
                     </div>
                 </div>
 
@@ -659,6 +664,9 @@
                 case 'sequence':
                     generateSequenceQuestion(config);
                     break;
+                case 'association':
+                    generateAssociationQuestion(config);
+                    break;
             }
         }
 
@@ -747,6 +755,72 @@
 
             const options = generateOptions(answer, config.maxNumber);
             renderOptions(options, answer);
+        }
+
+        // 生成数字联想题
+        function generateAssociationQuestion(config) {
+            // 联想类型：平方、倍数、特殊乘积
+            const types = ['square', 'multiply6', 'multiply7', 'multiply8', 'multiply9'];
+            const type = types[Math.floor(Math.random() * types.length)];
+            
+            let num, answer, question, relation;
+            
+            switch (type) {
+                case 'square':
+                    // 平方数：15→225, 12→144
+                    num = Math.floor(Math.random() * 12) + 10; // 10-21
+                    answer = num * num;
+                    relation = '平方';
+                    break;
+                case 'multiply6':
+                    // 6 的倍数：13→78, 14→84
+                    num = Math.floor(Math.random() * 15) + 10; // 10-24
+                    answer = num * 6;
+                    relation = '×6';
+                    break;
+                case 'multiply7':
+                    // 7 的倍数：11→77, 12→84
+                    num = Math.floor(Math.random() * 12) + 8; // 8-19
+                    answer = num * 7;
+                    relation = '×7';
+                    break;
+                case 'multiply8':
+                    // 8 的倍数：10→80, 11→88
+                    num = Math.floor(Math.random() * 10) + 8; // 8-17
+                    answer = num * 8;
+                    relation = '×8';
+                    break;
+                case 'multiply9':
+                    // 9 的倍数：10→90, 11→99
+                    num = Math.floor(Math.random() * 10) + 8; // 8-17
+                    answer = num * 9;
+                    relation = '×9';
+                    break;
+            }
+            
+            questionText.textContent = `看到 ${num}，想到什么数字？（${relation}）`;
+            
+            visualArea.innerHTML = `
+                <div class="visual-box">
+                    <h4>数字联想</h4>
+                    <div style="font-size: 72px; font-weight: bold; color: var(--primary); margin: 20px 0;">${num}</div>
+                    <div style="font-size: 48px; color: var(--secondary);">↓</div>
+                    <div style="font-size: 24px; color: #666;">?</div>
+                </div>
+            `;
+
+            // 生成干扰选项（接近正确答案）
+            const options = new Set([answer]);
+            while (options.size < 4) {
+                // 生成接近的答案作为干扰
+                const offset = (Math.floor(Math.random() * 5) + 1) * (Math.random() > 0.5 ? 1 : -1);
+                const option = answer + offset;
+                if (option > 0 && option !== answer) {
+                    options.add(option);
+                }
+            }
+            
+            renderOptions(Array.from(options).sort(() => Math.random() - 0.5), answer);
         }
 
         // 生成选项
