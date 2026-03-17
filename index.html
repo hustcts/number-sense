@@ -551,11 +551,6 @@
                         <div class="mode-title">快速估计</div>
                         <div class="mode-desc">一眼看出有多少个点</div>
                     </div>
-                    <div class="mode-card" data-mode="compare">
-                        <div class="mode-icon">⚖️</div>
-                        <div class="mode-title">大小比较</div>
-                        <div class="mode-desc">哪个数字更大？</div>
-                    </div>
                     <div class="mode-card" data-mode="calculate">
                         <div class="mode-icon">🧮</div>
                         <div class="mode-title">快速计算</div>
@@ -728,9 +723,6 @@
                 case 'estimate':
                     generateEstimateQuestion(config);
                     break;
-                case 'compare':
-                    generateCompareQuestion(config);
-                    break;
                 case 'calculate':
                     generateCalculateQuestion(config);
                     break;
@@ -760,28 +752,6 @@
             // 生成选项
             const options = generateOptions(count, config.maxNumber);
             renderOptions(options, count);
-        }
-
-        // 生成比较题
-        function generateCompareQuestion(config) {
-            const num1 = Math.floor(Math.random() * config.maxNumber) + 1;
-            const num2 = Math.floor(Math.random() * config.maxNumber) + 1;
-            
-            questionText.textContent = `哪个数字更大？`;
-            
-            visualArea.innerHTML = `
-                <div class="visual-box">
-                    <h4>数字 A</h4>
-                    <div style="font-size: 48px; font-weight: bold; color: var(--primary);">${num1}</div>
-                </div>
-                <div class="visual-box">
-                    <h4>数字 B</h4>
-                    <div style="font-size: 48px; font-weight: bold; color: var(--secondary);">${num2}</div>
-                </div>
-            `;
-
-            const correct = num1 > num2 ? 'A' : 'B';
-            renderOptions(['A', 'B'], correct);
         }
 
         // 生成计算题
