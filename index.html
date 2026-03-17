@@ -318,6 +318,159 @@
             }
         }
 
+        /* 烟花特效 */
+        .firework {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: fireworkExplode 1.2s ease-out forwards;
+            z-index: 998;
+        }
+
+        @keyframes fireworkExplode {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+                box-shadow: 
+                    0 0 20px currentColor,
+                    0 0 40px currentColor,
+                    0 0 60px currentColor;
+            }
+            100% {
+                transform: translate(var(--fx), var(--fy)) scale(0);
+                opacity: 0;
+            }
+        }
+
+        /* 屏幕震动效果 */
+        .screen-shake {
+            animation: screenShake 0.5s ease;
+        }
+
+        @keyframes screenShake {
+            0%, 100% { transform: translate(0, 0); }
+            10%, 30%, 50%, 70%, 90% { transform: translate(-5px, -5px); }
+            20%, 40%, 60%, 80% { transform: translate(5px, 5px); }
+        }
+
+        /* 正确答案光环 */
+        .correct-glow {
+            animation: correctGlow 1s ease infinite;
+        }
+
+        @keyframes correctGlow {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(0, 184, 148, 0.6);
+            }
+            50% {
+                box-shadow: 0 0 50px rgba(0, 184, 148, 1), 0 0 80px rgba(0, 184, 148, 0.4);
+            }
+        }
+
+        /* 浮动文字特效 */
+        .floating-text {
+            position: fixed;
+            font-size: 32px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+            animation: floatUp 1.5s ease-out forwards;
+            z-index: 1005;
+            pointer-events: none;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) scale(0.5) rotate(-10deg);
+                opacity: 0;
+            }
+            20% {
+                transform: translateY(-20px) scale(1.2) rotate(5deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) scale(1) rotate(0deg);
+                opacity: 0;
+            }
+        }
+
+        /* 金光闪闪特效 */
+        .golden-shine {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(255, 215, 0, 0.3) 50%,
+                transparent 70%
+            );
+            background-size: 200% 200%;
+            animation: goldenShineMove 1s ease forwards;
+            pointer-events: none;
+            z-index: 996;
+        }
+
+        @keyframes goldenShineMove {
+            0% {
+                background-position: -200% -200%;
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                background-position: 200% 200%;
+                opacity: 0;
+            }
+        }
+
+        /* 爱心特效 */
+        .love-heart {
+            position: fixed;
+            font-size: 40px;
+            animation: loveFloat 2s ease-out forwards;
+            z-index: 1004;
+        }
+
+        @keyframes loveFloat {
+            0% {
+                transform: translateY(0) scale(0);
+                opacity: 0;
+            }
+            20% {
+                transform: translateY(-30px) scale(1.2);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-150px) scale(0.8);
+                opacity: 0;
+            }
+        }
+
+        /* 闪电特效 */
+        .lightning-bolt {
+            position: fixed;
+            font-size: 60px;
+            animation: lightningFlash 0.8s ease-out forwards;
+            z-index: 1006;
+        }
+
+        @keyframes lightningFlash {
+            0%, 100% {
+                opacity: 0;
+                transform: scale(0.5) rotate(-20deg);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.5) rotate(0deg);
+                filter: brightness(1.5);
+            }
+        }
+
         /* 粒子特效容器 */
         #particle-container {
             position: fixed;
@@ -1185,36 +1338,63 @@
             });
         }
 
-        // 检查答案
+        // 检查答案 - 超炫酷版！
         function checkAnswer(selected, correct, btn) {
             // 禁用所有按钮
             document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
 
             if (selected === correct) {
                 btn.classList.add('correct');
+                btn.classList.add('correct-glow');
                 gameState.correctAnswers++;
                 gameState.streak++;
                 const points = 10 * gameState.streak;
                 gameState.score += points;
                 
-                // 即时奖励反馈 - 炫酷版！
+                // 获取按钮位置
+                const rect = btn.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                
+                // 即时奖励反馈 - 超级炫酷！
                 showReward('⭐');
                 createParticles(btn);
                 createStarBurst(btn);
+                createFirework(centerX, centerY);
                 showScorePopup(points);
+                createFloatingText(null, centerX, centerY);
                 updateRewardsDisplay();
                 
-                // 连对奖励
-                if (gameState.streak >= 3) {
+                // 根据连击数触发不同特效
+                if (gameState.streak === 2) {
+                    createLoveHearts(centerX, centerY);
+                }
+                if (gameState.streak === 3) {
                     showStreakBonus(gameState.streak);
                     showComboCounter(gameState.streak);
+                    createLightning(centerX, centerY);
                 }
-                
-                // 特殊连击效果
                 if (gameState.streak === 5) {
                     createRainbowEffect();
+                    createGoldenShine();
+                    // 屏幕震动
+                    document.getElementById('game-container').classList.add('screen-shake');
+                    setTimeout(() => {
+                        document.getElementById('game-container').classList.remove('screen-shake');
+                    }, 500);
                 }
-                if (gameState.streak === 10) {
+                if (gameState.streak === 7) {
+                    // 多重烟花
+                    for (let i = 0; i < 3; i++) {
+                        setTimeout(() => {
+                            createFirework(
+                                centerX + (Math.random() - 0.5) * 300,
+                                centerY + (Math.random() - 0.5) * 200
+                            );
+                        }, i * 300);
+                    }
+                }
+                if (gameState.streak >= 10) {
                     createEpicCelebration();
                 }
             } else {
@@ -1224,6 +1404,7 @@
                 document.querySelectorAll('.option-btn').forEach(b => {
                     if (b.textContent == correct) {
                         b.classList.add('correct');
+                        b.classList.add('correct-glow');
                         createParticles(b);
                     }
                 });
@@ -1248,20 +1429,20 @@
             const rect = element.getBoundingClientRect();
             const centerX = rect.left + rect.width / 2;
             const centerY = rect.top + rect.height / 2;
-            const colors = ['#f39c12', '#e74c3c', '#3498db', '#2ecc71', '#9b59b6', '#00b894', '#fdcb6e'];
+            const colors = ['#f39c12', '#e74c3c', '#3498db', '#2ecc71', '#9b59b6', '#00b894', '#fdcb6e', '#ff6b6b'];
 
-            for (let i = 0; i < 20; i++) {
+            for (let i = 0; i < 30; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'particle';
                 particle.style.left = centerX + 'px';
                 particle.style.top = centerY + 'px';
-                particle.style.width = (10 + Math.random() * 15) + 'px';
+                particle.style.width = (10 + Math.random() * 20) + 'px';
                 particle.style.height = particle.style.width;
                 particle.style.background = colors[Math.floor(Math.random() * colors.length)];
                 
                 // 随机方向
-                const angle = (i / 20) * Math.PI * 2;
-                const distance = 100 + Math.random() * 150;
+                const angle = (i / 30) * Math.PI * 2;
+                const distance = 150 + Math.random() * 200;
                 particle.style.setProperty('--tx', Math.cos(angle) * distance + 'px');
                 particle.style.setProperty('--ty', Math.sin(angle) * distance + 'px');
                 
@@ -1269,8 +1450,95 @@
                 
                 setTimeout(() => {
                     particle.remove();
-                }, 800);
+                }, 1000);
             }
+        }
+
+        // 创建烟花特效
+        function createFirework(x, y) {
+            const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ffa500', '#ff69b4'];
+            
+            for (let i = 0; i < 12; i++) {
+                const firework = document.createElement('div');
+                firework.className = 'firework';
+                firework.style.left = x + 'px';
+                firework.style.top = y + 'px';
+                firework.style.color = colors[i % colors.length];
+                firework.style.background = colors[i % colors.length];
+                
+                const angle = (i / 12) * Math.PI * 2;
+                const distance = 100 + Math.random() * 100;
+                firework.style.setProperty('--fx', Math.cos(angle) * distance + 'px');
+                firework.style.setProperty('--fy', Math.sin(angle) * distance + 'px');
+                
+                document.body.appendChild(firework);
+                
+                setTimeout(() => {
+                    firework.remove();
+                }, 1200);
+            }
+        }
+
+        // 创建浮动文字
+        function createFloatingText(text, x, y) {
+            const texts = ['太棒了！', '真厉害！', '继续加油！', '完美！', '优秀！', '💯', '🌟', '✨'];
+            const displayText = text || texts[Math.floor(Math.random() * texts.length)];
+            
+            const floating = document.createElement('div');
+            floating.className = 'floating-text';
+            floating.textContent = displayText;
+            floating.style.left = x + 'px';
+            floating.style.top = y + 'px';
+            
+            document.body.appendChild(floating);
+            
+            setTimeout(() => {
+                floating.remove();
+            }, 1500);
+        }
+
+        // 创建爱心特效
+        function createLoveHearts(x, y) {
+            for (let i = 0; i < 5; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'love-heart';
+                heart.textContent = '❤️';
+                heart.style.left = (x + (Math.random() - 0.5) * 100) + 'px';
+                heart.style.top = (y + (Math.random() - 0.5) * 50) + 'px';
+                heart.style.animationDelay = (i * 0.2) + 's';
+                
+                document.body.appendChild(heart);
+                
+                setTimeout(() => {
+                    heart.remove();
+                }, 2000);
+            }
+        }
+
+        // 创建闪电特效
+        function createLightning(x, y) {
+            const lightning = document.createElement('div');
+            lightning.className = 'lightning-bolt';
+            lightning.textContent = '⚡';
+            lightning.style.left = x + 'px';
+            lightning.style.top = y + 'px';
+            
+            document.body.appendChild(lightning);
+            
+            setTimeout(() => {
+                lightning.remove();
+            }, 800);
+        }
+
+        // 创建金光闪闪特效
+        function createGoldenShine() {
+            const shine = document.createElement('div');
+            shine.className = 'golden-shine';
+            document.body.appendChild(shine);
+            
+            setTimeout(() => {
+                shine.remove();
+            }, 1000);
         }
 
         // 创建星星爆炸特效
@@ -1376,8 +1644,21 @@
             }, 2000);
         }
 
-        // 史诗级庆祝效果（10 连击）
+        // 史诗级庆祝效果（10 连击）- 超级炫酷！
         function createEpicCelebration() {
+            // 屏幕震动
+            document.getElementById('game-container').classList.add('screen-shake');
+            
+            // 创建多个烟花爆炸
+            for (let i = 0; i < 8; i++) {
+                setTimeout(() => {
+                    createFirework(
+                        window.innerWidth / 2 + (Math.random() - 0.5) * 400,
+                        window.innerHeight / 2 + (Math.random() - 0.5) * 300
+                    );
+                }, i * 150);
+            }
+            
             // 创建多个粒子爆炸
             for (let i = 0; i < 5; i++) {
                 setTimeout(() => {
@@ -1394,27 +1675,44 @@
                 }, i * 200);
             }
             
+            // 创建爱心雨
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => {
+                    createLoveHearts(
+                        window.innerWidth / 2 + (Math.random() - 0.5) * 300,
+                        window.innerHeight / 2
+                    );
+                }, i * 200);
+            }
+            
+            // 金光闪闪
+            createGoldenShine();
+            
             // 显示特殊消息
+            const messages = [' 传奇连击！', ' 太神了！', ' 无敌了！', ' 数学大师！'];
             const msg = document.createElement('div');
             msg.style.cssText = `
                 position: fixed;
                 top: 30%;
                 left: 50%;
                 transform: translate(-50%, -50%);
-                font-size: 48px;
+                font-size: 64px;
                 font-weight: bold;
                 color: #f39c12;
-                text-shadow: 0 0 30px rgba(243, 156, 18, 0.8);
+                text-shadow: 0 0 50px rgba(243, 156, 18, 1), 0 0 100px rgba(243, 156, 18, 0.5);
                 z-index: 1003;
-                animation: streakPopup 2s ease forwards;
+                animation: streakPopup 2.5s ease forwards;
             `;
-            msg.textContent = ' 传奇连击！';
+            msg.textContent = messages[Math.floor(Math.random() * messages.length)];
             document.body.appendChild(msg);
             
-            setTimeout(() => msg.remove(), 2000);
+            setTimeout(() => {
+                msg.remove();
+                document.getElementById('game-container').classList.remove('screen-shake');
+            }, 2500);
         }
 
-        // 显示徽章解锁弹窗
+        // 显示徽章解锁弹窗 - 增强版！
         function showBadgeUnlock(badge) {
             const popup = document.createElement('div');
             popup.className = 'badge-unlock-popup';
@@ -1426,9 +1724,19 @@
             `;
             document.body.appendChild(popup);
             
+            // 创建庆祝烟花
+            setTimeout(() => {
+                for (let i = 0; i < 5; i++) {
+                    createFirework(
+                        window.innerWidth / 2 + (Math.random() - 0.5) * 300,
+                        window.innerHeight / 2 + (Math.random() - 0.5) * 200
+                    );
+                }
+            }, 500);
+            
             setTimeout(() => {
                 popup.remove();
-            }, 3000);
+            }, 3500);
         }
 
         // 更新进度
@@ -1507,54 +1815,76 @@
             saveProgress();
         }
 
-        // 关卡完成奖励展示
+        // 关卡完成奖励展示 - 超级炫酷！
         function showLevelCompleteRewards(stars, gems) {
-            // 星星动画
+            // 星星动画 - 带烟花
             for (let i = 0; i < stars; i++) {
                 setTimeout(() => {
-                    const star = document.createElement('div');
-                    star.textContent = '⭐';
-                    star.style.cssText = `
+                    const starEl = document.createElement('div');
+                    starEl.textContent = '⭐';
+                    starEl.style.cssText = `
                         position: fixed;
-                        font-size: 60px;
+                        font-size: 80px;
                         left: ${30 + i * 20}%;
                         top: 40%;
                         animation: starBurst 1.5s ease forwards;
                         z-index: 1000;
                     `;
-                    document.body.appendChild(star);
-                    setTimeout(() => star.remove(), 1500);
-                }, i * 300);
+                    document.body.appendChild(starEl);
+                    
+                    // 星星出现时放烟花
+                    createFirework(
+                        window.innerWidth * (0.3 + i * 0.2),
+                        window.innerHeight * 0.4
+                    );
+                    
+                    setTimeout(() => starEl.remove(), 1500);
+                }, i * 400);
             }
             
-            // 宝石动画
-            for (let i = 0; i < gems; i++) {
+            // 宝石雨 - 更多宝石
+            for (let i = 0; i < gems * 2; i++) {
                 setTimeout(() => {
                     const gem = document.createElement('div');
                     gem.textContent = '💎';
                     gem.style.cssText = `
                         position: fixed;
-                        font-size: 40px;
-                        left: ${40 + i * 5}%;
-                        top: 50%;
-                        animation: gemFly 1s ease-in-out forwards;
+                        font-size: 50px;
+                        left: ${20 + Math.random() * 60}%;
+                        top: -50px;
+                        animation: gemFly 1.5s ease-in-out forwards;
                         z-index: 1001;
                         --gemX: ${(Math.random() - 0.5) * 100}px;
-                        --gemY: -100px;
-                        --gemTargetX: ${(window.innerWidth / 3 - window.innerWidth / 2)}px;
+                        --gemY: ${100 + Math.random() * 100}px;
+                        --gemTargetX: ${(window.innerWidth / 3 - window.innerWidth / 2) + (Math.random() - 0.5) * 100}px;
                         --gemTargetY: ${(100 - window.innerHeight / 2)}px;
                     `;
                     document.body.appendChild(gem);
-                    setTimeout(() => gem.remove(), 1000);
-                }, i * 200 + stars * 300);
+                    setTimeout(() => gem.remove(), 1500);
+                }, i * 150 + stars * 400);
+            }
+            
+            // 浮动文字庆祝
+            const texts = ['太棒了！', '完美！', '继续加油！', '真厉害！'];
+            for (let i = 0; i < texts.length; i++) {
+                setTimeout(() => {
+                    createFloatingText(
+                        texts[i],
+                        window.innerWidth / 2 + (Math.random() - 0.5) * 300,
+                        window.innerHeight / 2 + (Math.random() - 0.5) * 200
+                    );
+                }, i * 300);
             }
         }
 
-        // 升级特效
+        // 升级特效 - 增强版！
         function createLevelUpEffect() {
             const effect = document.createElement('div');
             effect.className = 'level-up-effect';
             document.body.appendChild(effect);
+            
+            // 金光闪闪
+            createGoldenShine();
             
             // 显示升级文字
             const text = document.createElement('div');
@@ -1564,19 +1894,31 @@
                 top: 30%;
                 left: 50%;
                 transform: translate(-50%, -50%);
-                font-size: 56px;
+                font-size: 72px;
                 font-weight: bold;
                 color: white;
-                text-shadow: 0 0 30px rgba(253, 203, 18, 0.8);
+                text-shadow: 0 0 50px rgba(253, 203, 18, 1), 0 0 100px rgba(253, 203, 18, 0.5);
                 z-index: 1002;
-                animation: streakPopup 2s ease forwards;
+                animation: streakPopup 2.5s ease forwards;
             `;
             document.body.appendChild(text);
+            
+            // 多重烟花庆祝
+            setTimeout(() => {
+                for (let i = 0; i < 6; i++) {
+                    setTimeout(() => {
+                        createFirework(
+                            window.innerWidth / 2 + (Math.random() - 0.5) * 400,
+                            window.innerHeight / 2 + (Math.random() - 0.5) * 300
+                        );
+                    }, i * 200);
+                }
+            }, 500);
             
             setTimeout(() => {
                 effect.remove();
                 text.remove();
-            }, 2000);
+            }, 2500);
         }
 
         // 下一关
