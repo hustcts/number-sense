@@ -546,10 +546,15 @@
                         <div class="mode-title">数字联想</div>
                         <div class="mode-desc">快速想到相关数字</div>
                     </div>
-                    <div class="mode-card" data-mode="sudoku">
-                        <div class="mode-icon">🔲</div>
-                        <div class="mode-title">数独挑战</div>
-                        <div class="mode-desc">经典逻辑数字游戏</div>
+                    <div class="mode-card" data-mode="gcd">
+                        <div class="mode-icon">➗</div>
+                        <div class="mode-title">最大公约数</div>
+                        <div class="mode-desc">找出两个数的最大公约数</div>
+                    </div>
+                    <div class="mode-card" data-mode="lcm">
+                        <div class="mode-icon">✖️</div>
+                        <div class="mode-title">最小公倍数</div>
+                        <div class="mode-desc">找出两个数的最小公倍数</div>
                     </div>
                     <div class="mode-card" data-mode="calculate">
                         <div class="mode-icon">🧮</div>
@@ -720,8 +725,11 @@
             const config = difficultyConfig[gameState.difficulty];
             
             switch (gameState.mode) {
-                case 'sudoku':
-                    generateSudokuQuestion(config);
+                case 'gcd':
+                    generateGCDQuestion(config);
+                    break;
+                case 'lcm':
+                    generateLCMQuestion(config);
                     break;
                 case 'calculate':
                     generateCalculateQuestion(config);
@@ -735,140 +743,104 @@
             }
         }
 
-        // 数独游戏 - 生成题目
-        let currentSudoku = null;
-        let sudokuAnswer = null;
-        
-        function generateSudokuQuestion(config) {
-            // 难度对应的空格数量
-            const emptyCount = {
+        // 最大公约数游戏 - 生成题目
+        function generateGCDQuestion(config) {
+            // 根据难度生成不同范围的数字
+            const maxNum = {
                 easy: 20,
-                medium: 35,
-                hard: 45
+                medium: 50,
+                hard: 100
             }[gameState.difficulty] || 20;
             
-            questionText.textContent = `填入正确的数字（1-9）`;
+            // 生成两个数，确保有公约数
+            const gcd = Math.floor(Math.random() * 10) + 2; // 公约数 2-11
+            const num1 = gcd * (Math.floor(Math.random() * (maxNum / gcd)) + 1);
+            const num2 = gcd * (Math.floor(Math.random() * (maxNum / gcd)) + 1);
             
-            // 生成完整的数独解决方案
-            const solution = generateSudokuSolution();
+            questionText.textContent = `${num1} 和 ${num2} 的最大公约数是多少？`;
             
-            // 创建题目（挖空）
-            const puzzle = JSON.parse(JSON.stringify(solution));
-            let removed = 0;
-            while (removed < emptyCount) {
-                const row = Math.floor(Math.random() * 9);
-                const col = Math.floor(Math.random() * 9);
-                if (puzzle[row][col] !== 0) {
-                    puzzle[row][col] = 0;
-                    removed++;
-                }
-            }
-            
-            currentSudoku = puzzle;
-            sudokuAnswer = solution;
-            
-            // 找到第一个空格作为当前问题
-            let firstEmpty = null;
-            for (let r = 0; r < 9; r++) {
-                for (let c = 0; c < 9; c++) {
-                    if (puzzle[r][c] === 0 && !firstEmpty) {
-                        firstEmpty = { row: r, col: c };
-                    }
-                }
-            }
-            
-            // 渲染数独网格
-            renderSudoku(puzzle, firstEmpty);
-            
-            // 生成选项（正确答案 + 干扰项）
-            const correctAnswer = solution[firstEmpty.row][firstEmpty.col];
-            const options = generateSudokuOptions(correctAnswer);
+            // 生成选项
+            const correctAnswer = gcd;
+            const options = generateGCDOptions(correctAnswer);
             renderOptions(options, correctAnswer);
-        }
-        
-        // 生成完整的数独解决方案
-        function generateSudokuSolution() {
-            const board = Array(9).fill(null).map(() => Array(9).fill(0));
-            fillSudoku(board);
-            return board;
-        }
-        
-        // 回溯法填充数独
-        function fillSudoku(board) {
-            for (let row = 0; row < 9; row++) {
-                for (let col = 0; col < 9; col++) {
-                    if (board[row][col] === 0) {
-                        const nums = [1, 2, 3, 4, 5, 6, 7, 8, 9].sort(() => Math.random() - 0.5);
-                        for (let num of nums) {
-                            if (isValidSudoku(board, row, col, num)) {
-                                board[row][col] = num;
-                                if (fillSudoku(board)) return true;
-                                board[row][col] = 0;
-                            }
-                        }
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-        
-        // 检查数独是否有效
-        function isValidSudoku(board, row, col, num) {
-            // 检查行
-            for (let c = 0; c < 9; c++) {
-                if (board[row][c] === num) return false;
-            }
-            // 检查列
-            for (let r = 0; r < 9; r++) {
-                if (board[r][col] === num) return false;
-            }
-            // 检查 3x3 宫格
-            const startRow = Math.floor(row / 3) * 3;
-            const startCol = Math.floor(col / 3) * 3;
-            for (let r = startRow; r < startRow + 3; r++) {
-                for (let c = startCol; c < startCol + 3; c++) {
-                    if (board[r][c] === num) return false;
-                }
-            }
-            return true;
-        }
-        
-        // 渲染数独网格
-        function renderSudoku(puzzle, currentCell) {
-            let html = '<div style="display: inline-block; padding: 10px; background: #2d3436; border-radius: 10px;">';
-            html += '<div style="display: grid; grid-template-columns: repeat(9, 40px); gap: 1px; background: #2d3436;">';
             
-            for (let r = 0; r < 9; r++) {
-                for (let c = 0; c < 9; c++) {
-                    const isCurrent = currentCell && r === currentCell.row && c === currentCell.col;
-                    const value = puzzle[r][c];
-                    const borderRight = (c + 1) % 3 === 0 && c < 8 ? 'margin-right: 3px;' : '';
-                    const borderBottom = (r + 1) % 3 === 0 && r < 8 ? 'margin-bottom: 3px;' : '';
-                    
-                    html += `<div style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; 
-                        background: ${isCurrent ? '#6c5ce7' : 'white'}; 
-                        color: ${value !== 0 && !isCurrent ? '#2d3436' : (isCurrent ? 'white' : 'transparent')};
-                        font-weight: bold; font-size: 18px; border-radius: 3px; ${borderRight} ${borderBottom}">`;
-                    html += value !== 0 ? value : (isCurrent ? '?' : '');
-                    html += '</div>';
-                }
-            }
-            
-            html += '</div></div>';
-            visualArea.innerHTML = html;
+            // 显示提示
+            visualArea.innerHTML = `<div class="visual-box" style="text-align: center; padding: 30px;">
+                <h4 style="margin-bottom: 15px;">💡 提示</h4>
+                <p style="font-size: 16px; line-height: 1.8;">
+                    最大公约数是能同时整除两个数的<strong>最大</strong>的数<br>
+                    例如：12 和 18 的最大公约数是 6
+                </p>
+            </div>`;
         }
         
-        // 生成数独选项
-        function generateSudokuOptions(correct) {
+        // 生成 GCD 选项
+        function generateGCDOptions(correct) {
             const options = new Set([correct]);
+            // 添加一些可能的公约数作为干扰项
+            const divisors = [];
+            for (let i = 2; i <= correct; i++) {
+                if (correct % i === 0) divisors.push(i);
+            }
+            divisors.forEach(d => {
+                if (d !== correct && options.size < 4) options.add(d);
+            });
+            // 添加随机干扰项
             while (options.size < 4) {
-                const num = Math.floor(Math.random() * 9) + 1;
-                if (num !== correct) {
-                    options.add(num);
-                }
+                const num = Math.floor(Math.random() * 15) + 2;
+                if (num !== correct) options.add(num);
             }
             return Array.from(options).sort(() => Math.random() - 0.5);
+        }
+
+        // 最小公倍数游戏 - 生成题目
+        function generateLCMQuestion(config) {
+            // 根据难度生成不同范围的数字
+            const maxNum = {
+                easy: 12,
+                medium: 20,
+                hard: 30
+            }[gameState.difficulty] || 12;
+            
+            // 生成两个数
+            let num1 = Math.floor(Math.random() * (maxNum - 2)) + 2;
+            let num2 = Math.floor(Math.random() * (maxNum - 2)) + 2;
+            
+            // 计算最小公倍数
+            const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
+            const lcm = (num1 * num2) / gcd(num1, num2);
+            
+            questionText.textContent = `${num1} 和 ${num2} 的最小公倍数是多少？`;
+            
+            // 生成选项
+            const correctAnswer = lcm;
+            const options = generateLCMOptions(correctAnswer, num1, num2);
+            renderOptions(options, correctAnswer);
+            
+            // 显示提示
+            visualArea.innerHTML = `<div class="visual-box" style="text-align: center; padding: 30px;">
+                <h4 style="margin-bottom: 15px;">💡 提示</h4>
+                <p style="font-size: 16px; line-height: 1.8;">
+                    最小公倍数是能同时被两个数整除的<strong>最小</strong>的数<br>
+                    例如：4 和 6 的最小公倍数是 12
+                </p>
+            </div>`;
+        }
+        
+        // 生成 LCM 选项
+        function generateLCMOptions(correct, num1, num2) {
+            const options = new Set([correct]);
+            // 添加两个数的乘积作为干扰项
+            options.add(num1 * num2);
+            // 添加一些倍数作为干扰项
+            options.add(correct * 2);
+            options.add(correct / 2);
+            // 填充到 4 个选项
+            while (options.size < 4) {
+                const num = Math.floor(Math.random() * 50) + 5;
+                if (num !== correct) options.add(num);
+            }
+            return Array.from(options).filter(n => n > 0 && Number.isInteger(n)).sort(() => Math.random() - 0.5).slice(0, 4);
         }
 
         // 生成计算题
