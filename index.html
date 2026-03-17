@@ -267,6 +267,7 @@
             border-color: var(--secondary);
             color: white;
             animation: celebrate 0.5s ease;
+            box-shadow: 0 0 30px rgba(0, 184, 148, 0.6);
         }
 
         .option-btn.wrong {
@@ -278,7 +279,7 @@
 
         @keyframes celebrate {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+            50% { transform: scale(1.15); }
         }
 
         @keyframes shake {
@@ -287,7 +288,7 @@
             75% { transform: translateX(10px); }
         }
 
-        /* 连对奖励动画 */
+        /* 炫酷奖励动画 */
         .streak-bonus {
             position: fixed;
             top: 50%;
@@ -296,7 +297,208 @@
             font-size: 72px;
             font-weight: bold;
             color: #f39c12;
-            text-shadow: 0 0 20px rgba(243, 156, 18, 0.8);
+            text-shadow: 0 0 30px rgba(243, 156, 18, 0.8);
+            z-index: 1000;
+            animation: streakPopup 1s ease forwards;
+            pointer-events: none;
+        }
+
+        @keyframes streakPopup {
+            0% {
+                transform: translate(-50%, -50%) scale(0) rotate(-10deg);
+                opacity: 0;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.3) rotate(5deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1) rotate(0deg);
+                opacity: 0;
+            }
+        }
+
+        /* 粒子特效容器 */
+        #particle-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            animation: particleFly 1.5s ease-out forwards;
+        }
+
+        @keyframes particleFly {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(0);
+                opacity: 0;
+            }
+        }
+
+        /* 星星特效 */
+        .star-burst {
+            position: absolute;
+            font-size: 40px;
+            animation: starBurst 1s ease-out forwards;
+        }
+
+        @keyframes starBurst {
+            0% {
+                transform: scale(0) rotate(0deg);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.5) rotate(180deg);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(0.5) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* 升级特效 */
+        .level-up-effect {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(253, 203, 110, 0.3) 0%, transparent 70%);
+            animation: levelUpFlash 1.5s ease-out forwards;
+            pointer-events: none;
+            z-index: 998;
+        }
+
+        @keyframes levelUpFlash {
+            0% {
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+
+        /* 宝石收集动画 */
+        .gem-collect {
+            position: fixed;
+            font-size: 48px;
+            animation: gemFly 1s ease-in-out forwards;
+            z-index: 1001;
+        }
+
+        @keyframes gemFly {
+            0% {
+                transform: translate(0, 0) scale(0.5);
+                opacity: 0;
+            }
+            50% {
+                transform: translate(var(--gemX), var(--gemY)) scale(1.2);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--gemTargetX), var(--gemTargetY)) scale(0.8);
+                opacity: 0;
+            }
+        }
+
+        /* 连击计数器 */
+        .combo-counter {
+            position: fixed;
+            top: 100px;
+            right: 50px;
+            background: linear-gradient(135deg, #f39c12, #e74c3c);
+            padding: 15px 25px;
+            border-radius: 50px;
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            box-shadow: 0 10px 30px rgba(243, 156, 18, 0.4);
+            animation: comboPulse 0.5s ease;
+            z-index: 997;
+        }
+
+        @keyframes comboPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* 彩虹特效 */
+        .rainbow-effect {
+            background: linear-gradient(90deg, 
+                rgba(255,0,0,0.3), 
+                rgba(255,165,0,0.3), 
+                rgba(255,255,0,0.3), 
+                rgba(0,128,0,0.3), 
+                rgba(0,0,255,0.3), 
+                rgba(75,0,130,0.3), 
+                rgba(238,130,238,0.3)
+            );
+            background-size: 200% 200%;
+            animation: rainbowFlow 2s ease infinite;
+        }
+
+        @keyframes rainbowFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 成就解锁弹窗 */
+        .badge-unlock-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            padding: 40px 60px;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(108, 92, 231, 0.4);
+            text-align: center;
+            color: white;
+            z-index: 1002;
+            animation: badgeUnlock 1.5s ease forwards;
+        }
+
+        @keyframes badgeUnlock {
+            0% {
+                transform: translate(-50%, -50%) scale(0) rotate(-10deg);
+                opacity: 0;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.1) rotate(5deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        .badge-unlock-popup .badge-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: badgeSpin 2s ease infinite;
+        }
+
+        @keyframes badgeSpin {
+            0%, 100% { transform: rotate(-10deg); }
+            50% { transform: rotate(10deg); }
+        }
             z-index: 1000;
             animation: streakPop 1s ease forwards;
             pointer-events: none;
@@ -636,6 +838,9 @@
         </div>
     </div>
 
+    <!-- 粒子特效容器 -->
+    <div id="particle-container"></div>
+    
     <!-- 奖励动画 -->
     <div id="reward-animation"></div>
 
@@ -992,14 +1197,25 @@
                 const points = 10 * gameState.streak;
                 gameState.score += points;
                 
-                // 即时奖励反馈
+                // 即时奖励反馈 - 炫酷版！
                 showReward('⭐');
                 createParticles(btn);
+                createStarBurst(btn);
                 showScorePopup(points);
+                updateRewardsDisplay();
                 
                 // 连对奖励
                 if (gameState.streak >= 3) {
                     showStreakBonus(gameState.streak);
+                    showComboCounter(gameState.streak);
+                }
+                
+                // 特殊连击效果
+                if (gameState.streak === 5) {
+                    createRainbowEffect();
+                }
+                if (gameState.streak === 10) {
+                    createEpicCelebration();
                 }
             } else {
                 btn.classList.add('wrong');
@@ -1008,6 +1224,7 @@
                 document.querySelectorAll('.option-btn').forEach(b => {
                     if (b.textContent == correct) {
                         b.classList.add('correct');
+                        createParticles(b);
                     }
                 });
             }
@@ -1026,23 +1243,25 @@
             }, 1000);
         }
 
-        // 创建粒子爆炸效果
+        // 创建粒子爆炸效果 - 增强版！
         function createParticles(element) {
             const rect = element.getBoundingClientRect();
             const centerX = rect.left + rect.width / 2;
             const centerY = rect.top + rect.height / 2;
-            const colors = ['#f39c12', '#e74c3c', '#3498db', '#2ecc71', '#9b59b6'];
+            const colors = ['#f39c12', '#e74c3c', '#3498db', '#2ecc71', '#9b59b6', '#00b894', '#fdcb6e'];
 
-            for (let i = 0; i < 12; i++) {
+            for (let i = 0; i < 20; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'particle';
                 particle.style.left = centerX + 'px';
                 particle.style.top = centerY + 'px';
+                particle.style.width = (10 + Math.random() * 15) + 'px';
+                particle.style.height = particle.style.width;
                 particle.style.background = colors[Math.floor(Math.random() * colors.length)];
                 
                 // 随机方向
-                const angle = (i / 12) * Math.PI * 2;
-                const distance = 100 + Math.random() * 100;
+                const angle = (i / 20) * Math.PI * 2;
+                const distance = 100 + Math.random() * 150;
                 particle.style.setProperty('--tx', Math.cos(angle) * distance + 'px');
                 particle.style.setProperty('--ty', Math.sin(angle) * distance + 'px');
                 
@@ -1054,30 +1273,162 @@
             }
         }
 
-        // 显示分数增加弹窗
+        // 创建星星爆炸特效
+        function createStarBurst(element) {
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            for (let i = 0; i < 8; i++) {
+                const star = document.createElement('div');
+                star.className = 'star-burst';
+                star.textContent = '⭐';
+                star.style.left = centerX + 'px';
+                star.style.top = centerY + 'px';
+                
+                const angle = (i / 8) * Math.PI * 2;
+                const distance = 80 + Math.random() * 60;
+                star.style.transform = `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px)`;
+                
+                document.body.appendChild(star);
+                
+                setTimeout(() => {
+                    star.remove();
+                }, 1000);
+            }
+        }
+
+        // 显示分数增加弹窗 - 增强版！
         function showScorePopup(points) {
             const popup = document.createElement('div');
             popup.className = 'score-popup';
-            popup.textContent = '+' + points;
+            popup.innerHTML = `+${points} <span style="font-size:20px">💎</span>`;
             popup.style.left = '50%';
             popup.style.top = '40%';
             document.body.appendChild(popup);
             
+            // 创建飞向宝石栏的动画
+            const gemTarget = document.getElementById('gems-count').getBoundingClientRect();
+            const gemFly = document.createElement('div');
+            gemFly.className = 'gem-collect';
+            gemFly.textContent = '💎';
+            gemFly.style.left = '50%';
+            gemFly.style.top = '40%';
+            gemFly.style.setProperty('--gemX', (Math.random() - 0.5) * 100 + 'px');
+            gemFly.style.setProperty('--gemY', -50 + 'px');
+            gemFly.style.setProperty('--gemTargetX', (gemTarget.left - window.innerWidth / 2) + 'px');
+            gemFly.style.setProperty('--gemTargetY', (gemTarget.top - window.innerHeight / 2) + 'px');
+            document.body.appendChild(gemFly);
+            
             setTimeout(() => {
                 popup.remove();
+                gemFly.remove();
             }, 1000);
         }
 
-        // 显示连对奖励
+        // 显示连对奖励 - 增强版！
         function showStreakBonus(streak) {
             const bonus = document.createElement('div');
             bonus.className = 'streak-bonus';
-            bonus.textContent = streak + '连对!🔥';
+            
+            let text = '';
+            let emoji = '';
+            if (streak === 3) { text = '3 连对！'; emoji = '🔥'; }
+            else if (streak === 5) { text = '5 连对！'; emoji = '⭐'; }
+            else if (streak === 7) { text = '7 连对！'; emoji = '💎'; }
+            else if (streak >= 10) { text = `${streak}连对！`; emoji = '👑'; }
+            else { text = `${streak}连对！`; emoji = '✨'; }
+            
+            bonus.textContent = text + emoji;
+            bonus.classList.add('rainbow-effect');
             document.body.appendChild(bonus);
             
             setTimeout(() => {
                 bonus.remove();
-            }, 1000);
+            }, 1500);
+        }
+
+        // 显示连击计数器
+        function showComboCounter(streak) {
+            // 移除旧的计数器
+            const old = document.querySelector('.combo-counter');
+            if (old) old.remove();
+            
+            const counter = document.createElement('div');
+            counter.className = 'combo-counter';
+            counter.innerHTML = `🔥 ${streak} COMBO!`;
+            document.body.appendChild(counter);
+            
+            // 3 秒后移除
+            setTimeout(() => {
+                counter.remove();
+            }, 3000);
+        }
+
+        // 彩虹特效
+        function createRainbowEffect() {
+            const effect = document.createElement('div');
+            effect.className = 'level-up-effect rainbow-effect';
+            document.body.appendChild(effect);
+            
+            setTimeout(() => {
+                effect.remove();
+            }, 2000);
+        }
+
+        // 史诗级庆祝效果（10 连击）
+        function createEpicCelebration() {
+            // 创建多个粒子爆炸
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const fakeBtn = {
+                        getBoundingClientRect: () => ({
+                            left: window.innerWidth / 2 + (Math.random() - 0.5) * 200,
+                            top: window.innerHeight / 2 + (Math.random() - 0.5) * 200,
+                            width: 100,
+                            height: 50
+                        })
+                    };
+                    createParticles(fakeBtn);
+                    createStarBurst(fakeBtn);
+                }, i * 200);
+            }
+            
+            // 显示特殊消息
+            const msg = document.createElement('div');
+            msg.style.cssText = `
+                position: fixed;
+                top: 30%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 48px;
+                font-weight: bold;
+                color: #f39c12;
+                text-shadow: 0 0 30px rgba(243, 156, 18, 0.8);
+                z-index: 1003;
+                animation: streakPopup 2s ease forwards;
+            `;
+            msg.textContent = ' 传奇连击！';
+            document.body.appendChild(msg);
+            
+            setTimeout(() => msg.remove(), 2000);
+        }
+
+        // 显示徽章解锁弹窗
+        function showBadgeUnlock(badge) {
+            const popup = document.createElement('div');
+            popup.className = 'badge-unlock-popup';
+            popup.innerHTML = `
+                <div class="badge-icon">${badge.icon}</div>
+                <h2 style="margin-bottom: 10px;"> 成就解锁！</h2>
+                <p style="font-size: 24px;">${badge.name}</p>
+                <p style="opacity: 0.8; margin-top: 10px;">${badge.desc}</p>
+            `;
+            document.body.appendChild(popup);
+            
+            setTimeout(() => {
+                popup.remove();
+            }, 3000);
         }
 
         // 更新进度
@@ -1100,21 +1451,37 @@
             document.getElementById('trophies-count').textContent = gameState.trophies;
             document.getElementById('gems-count').textContent = gameState.gems;
 
-            // 更新徽章
-            const badges = [100, 500, 1000, 5000, 10000];
-            badges.forEach((threshold, index) => {
-                const badge = document.getElementById(`badge-${index + 1}`);
-                if (gameState.score >= threshold) {
-                    badge.classList.add('earned');
-                    if (!gameState.badges.includes(index + 1)) {
-                        gameState.badges.push(index + 1);
-                        showReward('🏅');
+            // 徽章系统 - 带炫酷解锁动画
+            const badgeConfig = [
+                { id: 1, threshold: 100, name: '初出茅庐', icon: '🌱', desc: '得分达到 100 分' },
+                { id: 2, threshold: 500, name: '渐入佳境', icon: '📚', desc: '得分达到 500 分' },
+                { id: 3, threshold: 1000, name: '数学达人', icon: '⭐', desc: '得分达到 1000 分' },
+                { id: 4, threshold: 5000, name: '数感大师', icon: '🏆', desc: '得分达到 5000 分' },
+                { id: 5, threshold: 10000, name: '传奇之路', icon: '👑', desc: '得分达到 10000 分' }
+            ];
+            
+            badgeConfig.forEach((badge) => {
+                const badgeEl = document.getElementById(`badge-${badge.id}`);
+                if (gameState.score >= badge.threshold) {
+                    badgeEl.classList.add('earned');
+                    if (!gameState.badges.includes(badge.id)) {
+                        gameState.badges.push(badge.id);
+                        // 显示炫酷解锁动画！
+                        showBadgeUnlock(badge);
+                        createParticles({
+                            getBoundingClientRect: () => ({
+                                left: window.innerWidth / 2,
+                                top: window.innerHeight / 2,
+                                width: 100,
+                                height: 100
+                            })
+                        });
                     }
                 }
             });
         }
 
-        // 完成关卡
+        // 完成关卡 - 炫酷版！
         function completeLevel() {
             gameUI.style.display = 'none';
             levelComplete.style.display = 'block';
@@ -1130,8 +1497,86 @@
             document.getElementById('level-stars').textContent = stars;
             document.getElementById('level-gems').textContent = gems;
 
+            // 炫酷奖励动画！
+            setTimeout(() => {
+                createLevelUpEffect();
+                showLevelCompleteRewards(stars, gems);
+            }, 500);
+
             updateRewardsDisplay();
             saveProgress();
+        }
+
+        // 关卡完成奖励展示
+        function showLevelCompleteRewards(stars, gems) {
+            // 星星动画
+            for (let i = 0; i < stars; i++) {
+                setTimeout(() => {
+                    const star = document.createElement('div');
+                    star.textContent = '⭐';
+                    star.style.cssText = `
+                        position: fixed;
+                        font-size: 60px;
+                        left: ${30 + i * 20}%;
+                        top: 40%;
+                        animation: starBurst 1.5s ease forwards;
+                        z-index: 1000;
+                    `;
+                    document.body.appendChild(star);
+                    setTimeout(() => star.remove(), 1500);
+                }, i * 300);
+            }
+            
+            // 宝石动画
+            for (let i = 0; i < gems; i++) {
+                setTimeout(() => {
+                    const gem = document.createElement('div');
+                    gem.textContent = '💎';
+                    gem.style.cssText = `
+                        position: fixed;
+                        font-size: 40px;
+                        left: ${40 + i * 5}%;
+                        top: 50%;
+                        animation: gemFly 1s ease-in-out forwards;
+                        z-index: 1001;
+                        --gemX: ${(Math.random() - 0.5) * 100}px;
+                        --gemY: -100px;
+                        --gemTargetX: ${(window.innerWidth / 3 - window.innerWidth / 2)}px;
+                        --gemTargetY: ${(100 - window.innerHeight / 2)}px;
+                    `;
+                    document.body.appendChild(gem);
+                    setTimeout(() => gem.remove(), 1000);
+                }, i * 200 + stars * 300);
+            }
+        }
+
+        // 升级特效
+        function createLevelUpEffect() {
+            const effect = document.createElement('div');
+            effect.className = 'level-up-effect';
+            document.body.appendChild(effect);
+            
+            // 显示升级文字
+            const text = document.createElement('div');
+            text.textContent = '🎉 关卡完成！';
+            text.style.cssText = `
+                position: fixed;
+                top: 30%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 56px;
+                font-weight: bold;
+                color: white;
+                text-shadow: 0 0 30px rgba(253, 203, 18, 0.8);
+                z-index: 1002;
+                animation: streakPopup 2s ease forwards;
+            `;
+            document.body.appendChild(text);
+            
+            setTimeout(() => {
+                effect.remove();
+                text.remove();
+            }, 2000);
         }
 
         // 下一关
